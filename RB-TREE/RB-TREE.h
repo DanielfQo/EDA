@@ -26,6 +26,7 @@ class RBTree{
     void rotarDerecha(Nodo* x);
 
     public:
+
     RBTree();
     Nodo* getRoot();
     void insertarValor(int dato);

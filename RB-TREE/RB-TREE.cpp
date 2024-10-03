@@ -10,6 +10,10 @@ Nodo::Nodo(int dato){
     this->color = 1;
 }
 
+RBTree::RBTree(){
+    this->root = nullptr;
+}
+
 Nodo* RBTree::getRoot(){
     return this->root;
 }
@@ -136,7 +140,7 @@ bool RBTree::buscarValor(int dato){
         return 1;
 }
 
-void RBTree::imprimirArbol(Nodo* nodo, int nivel = 0) {
+void RBTree::imprimirArbol(Nodo* nodo, int nivel) {
     if (nodo != nullptr) {
         imprimirArbol(nodo->der, nivel + 1);
 

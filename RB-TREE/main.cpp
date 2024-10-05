@@ -11,7 +11,7 @@ int main() {
     
     int DATOS = 0;
     int BUSQUEDA = 100000;
-    int MAX = 100000;
+    int MAX = 10000;
     cout << "CANT" << " TIEMPO" << endl;
 
     for (int i = 100; i <= MAX; i += 100) {

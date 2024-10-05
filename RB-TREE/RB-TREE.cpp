@@ -125,19 +125,18 @@ void RBTree::insertarValor(int dato){
     this->insertarFixup(z);
 }
 
-bool RBTree::buscarValor(int dato){
+int RBTree::buscarValor(int dato){
     Nodo* x = this->root;
+    int comparaciones = 0;
     while(x != nullptr && x->dato != dato){
         if(dato < x->dato)
             x = x->izq;
         else
             x = x->der;
+        comparaciones++;
     }
 
-    if(x == nullptr)
-        return 0;
-    else
-        return 1;
+    return comparaciones;
 }
 
 void RBTree::imprimirArbol(Nodo* nodo, int nivel) {

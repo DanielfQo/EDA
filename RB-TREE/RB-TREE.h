@@ -31,7 +31,7 @@ class RBTree{
     Nodo* getRoot();
     void insertarValor(int dato);
     void eliminarValor(int dato);
-    bool buscarValor(int dato);
+    int buscarValor(int dato);
     void imprimirArbol(Nodo* nodo, int nivel = 0);
 };
 

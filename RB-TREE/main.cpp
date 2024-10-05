@@ -1,38 +1,49 @@
-#include<iostream>
-#include<random>
-#include<ctime>
-#include"RB-TREE.h"
+#include <iostream>
+#include <random>
+#include <ctime>
+#include <chrono>
+#include "RB-TREE.h"
 
 using namespace std;
+using namespace std::chrono;
 
-int main(){
-    RBTree arbolRB;
+int main() {
+    
+    int DATOS = 0;
+    int BUSQUEDA = 10000;
+    int MAX = 10000;
+    cout << "CANT" << " TIEMPO" << endl;
 
-    srand(time(0));
+    for (int i = 100; i <= MAX; i += 100) {
+        DATOS = i;
+        RBTree arbolRB;
 
-    for (int i = 1; i <= 100000; ++i) {
-        arbolRB.insertarValor(i);
+        srand(time(0));
+
+        for (int j = 1; j <= DATOS; ++j) {
+            arbolRB.insertarValor(j);
+        }
+
+        double total_time_used = 0;
+
+        for (int j = 0; j < BUSQUEDA; ++j) {
+            int randomValue = rand() % DATOS + 1;
+
+            auto start = high_resolution_clock::now();
+            bool found = arbolRB.buscarValor(randomValue);
+            auto end = high_resolution_clock::now();
+
+            auto duration = duration_cast<nanoseconds>(end - start).count();
+            
+            total_time_used += duration;
+        }
+
+        // Calculamos el tiempo promedio por búsqueda
+        double avg_time_used = total_time_used / BUSQUEDA;
+
+        // Mostramos el tiempo promedio
+        cout << i << " " << avg_time_used << endl;
     }
-
-    clock_t start, end;
-    double total_time_used = 0;
-
-    // Realizamos 10000 búsquedas
-    for (int i = 0; i < 10000; ++i) {
-        int randomValue = rand() % 10000 + 1;
-
-        start = clock();
-        bool found = arbolRB.buscarValor(randomValue);
-        end = clock();
-
-        total_time_used += ((double) (end - start)) / CLOCKS_PER_SEC;
-    }
-
-    // Calculamos el tiempo promedio por búsqueda
-    double avg_time_used = total_time_used / 10000;
-
-    // Mostramos el tiempo promedio
-    cout << "Tiempo promedio de búsqueda: " << avg_time_used << " segundos" << endl;
 
     return 0;
 }

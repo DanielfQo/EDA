@@ -18,13 +18,13 @@ public:
     void insertar(K clave, V valor){
 
         if(cache.find(clave) != cache.end()){
-            lista.eliminarNodo(clave);
+            lista.eliminarNodoDirecto(cache[clave]);
             cache.erase(clave);     
         }        
 
         if(lista.getSize() == maxSize){
             K clave_a_eliminar = lista.getHead()->clave; 
-            lista.eliminarNodo(clave_a_eliminar);
+            lista.eliminarNodoDirecto(cache[clave_a_eliminar]);
             cache.erase(clave_a_eliminar);
         }
 

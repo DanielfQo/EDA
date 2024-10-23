@@ -24,6 +24,7 @@ public:
     Nodo<K, V>* insertarNodo(K clave, V valor);
     V* buscarValor(K clave);
     void eliminarNodo(K clave);
+    void eliminarNodoDirecto(Nodo<K, V>* nodo);
     void mostrarLista();
     Nodo<K, V>* getHead() { return head; }
     int getSize() { return size; }
@@ -77,6 +78,22 @@ void ListaDobleEnlazada<K, V>::eliminarNodo(K clave) {
         temp = temp->siguiente;
     }
     
+}
+
+template <typename K, typename V>
+void ListaDobleEnlazada<K, V>::eliminarNodoDirecto(Nodo<K, V>* nodo) {
+    if (nodo->anterior != nullptr) {
+        nodo->anterior->siguiente = nodo->siguiente;
+    } else {
+        head = nodo->siguiente;
+    }
+    if (nodo->siguiente != nullptr) {
+        nodo->siguiente->anterior = nodo->anterior;
+    } else {
+        tail = nodo->anterior;
+    }
+    delete nodo;
+    size--;
 }
 
 template <typename K, typename V>

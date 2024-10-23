@@ -4,26 +4,26 @@ using namespace std;
 
 int main(){
 
-    LRU<char, int> cache(4);
-    cache.insertar('c', 9);
+    LRU<char> cache(4);
+    cache.insertar('c');
     cache.mostrarCache();
-    cache.insertar('a', 8);
+    cache.insertar('a');
     cache.mostrarCache();
-    cache.insertar('d', 3);
+    cache.insertar('d');
     cache.mostrarCache();
-    cache.insertar('b', 2);
+    cache.insertar('b');
     cache.mostrarCache();
-    cache.insertar('e', 7);
+    cache.insertar('e');
     cache.mostrarCache();
-    cache.insertar('b', 10);
+    cache.insertar('b');
     cache.mostrarCache();
-    cache.insertar('a', 11);
+    cache.insertar('a');
     cache.mostrarCache();
-    cache.insertar('b', 12);
+    cache.insertar('b');
     cache.mostrarCache();
-    cache.insertar('c', 15);
+    cache.insertar('c');
     cache.mostrarCache();
-    cache.insertar('d', 1);
+    cache.insertar('d');
     cache.mostrarCache();
 
 

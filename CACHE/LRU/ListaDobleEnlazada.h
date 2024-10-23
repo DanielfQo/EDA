@@ -2,39 +2,37 @@
 
 #include <iostream>
 
-template <typename K, typename V>
+template <typename K>
 class Nodo {
 public:
     K clave;
-    V valor;
     Nodo* siguiente;
     Nodo* anterior;
 
-    Nodo(K c, V v) : clave(c), valor(v), siguiente(nullptr), anterior(nullptr) {}
+    Nodo(K c) : clave(c), siguiente(nullptr), anterior(nullptr) {}
 };
 
-template <typename K, typename V>
+template <typename K>
 class ListaDobleEnlazada {
 private:
-    Nodo<K, V>* head;
-    Nodo<K, V>* tail;
+    Nodo<K>* head;
+    Nodo<K>* tail;
     int size;
 
 public:
     ListaDobleEnlazada() : head(nullptr), tail(nullptr), size(0) {}
 
-    Nodo<K, V>* insertarNodo(K clave, V valor);
-    V* buscarValor(K clave);
+    Nodo<K>* insertarNodo(K clave);
     void eliminarNodo(K clave);
-    void eliminarNodoDirecto(Nodo<K, V>* nodo);
+    void eliminarNodoDirecto(Nodo<K>* nodo);
     void mostrarLista();
-    Nodo<K, V>* getHead() { return head; }
+    Nodo<K>* getHead() { return head; }
     int getSize() { return size; }
 };
 
-template <typename K, typename V>
-Nodo<K, V>* ListaDobleEnlazada<K, V>::insertarNodo(K clave, V valor) {
-    Nodo<K, V>* nuevoNodo = new Nodo<K, V>(clave, valor);
+template <typename K>
+Nodo<K>* ListaDobleEnlazada<K>::insertarNodo(K clave) {
+    Nodo<K>* nuevoNodo = new Nodo<K>(clave);
     if (head == nullptr) {
         head = tail = nuevoNodo;
     } else {
@@ -46,21 +44,10 @@ Nodo<K, V>* ListaDobleEnlazada<K, V>::insertarNodo(K clave, V valor) {
     return nuevoNodo;
 }
 
-template <typename K, typename V>
-V* ListaDobleEnlazada<K, V>::buscarValor(K clave) {
-    Nodo<K, V>* temp = head;
-    while (temp != nullptr) {
-        if (temp->clave == clave) {
-            return &(temp->valor); 
-        }
-        temp = temp->siguiente;
-    }
-    return nullptr;
-}
 
-template <typename K, typename V>
-void ListaDobleEnlazada<K, V>::eliminarNodo(K clave) {
-    Nodo<K, V>* temp = head;
+template <typename K>
+void ListaDobleEnlazada<K>::eliminarNodo(K clave) {
+    Nodo<K>* temp = head;
     while (temp != nullptr) {
         if (temp->clave == clave) {
             if (temp->anterior != nullptr) {
@@ -82,8 +69,8 @@ void ListaDobleEnlazada<K, V>::eliminarNodo(K clave) {
     
 }
 
-template <typename K, typename V>
-void ListaDobleEnlazada<K, V>::eliminarNodoDirecto(Nodo<K, V>* nodo) {
+template <typename K>
+void ListaDobleEnlazada<K>::eliminarNodoDirecto(Nodo<K>* nodo) {
     if (nodo->anterior != nullptr) {
         nodo->anterior->siguiente = nodo->siguiente;
     } else {
@@ -98,11 +85,11 @@ void ListaDobleEnlazada<K, V>::eliminarNodoDirecto(Nodo<K, V>* nodo) {
     size--;
 }
 
-template <typename K, typename V>
-void ListaDobleEnlazada<K, V>::mostrarLista() {
-    Nodo<K, V>* temp = head;
+template <typename K>
+void ListaDobleEnlazada<K>::mostrarLista() {
+    Nodo<K>* temp = head;
     while (temp != nullptr) {
-        std::cout << "[" << temp->clave << ": " << temp->valor << "] ";
+        std::cout << "[" << temp->clave << "] ";
         temp = temp->siguiente;
     }
     std::cout << std::endl;

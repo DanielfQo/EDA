@@ -4,20 +4,20 @@
 #include <unordered_map>
 #include "ListaDobleEnlazada.h"
 
-template <typename K, typename V>
+template <typename K>
 class LRU{
 private:
 
     int maxSize;
-    std::unordered_map<K, Nodo<K,V>*> cache;
+    std::unordered_map<K, Nodo<K>*> cache;
 
-    ListaDobleEnlazada<K,V> lista;
+    ListaDobleEnlazada<K> lista;
 
 public:
 
     LRU(int maxSize) : maxSize(maxSize) {}
 
-    void insertar(K clave, V valor){
+    void insertar(K clave){
 
         if(cache.find(clave) != cache.end()){
             lista.eliminarNodoDirecto(cache[clave]);
@@ -31,7 +31,7 @@ public:
         }
 
 
-        Nodo<K,V>* nodo = lista.insertarNodo(clave, valor);
+        Nodo<K>* nodo = lista.insertarNodo(clave);
         cache[clave] = nodo;
     }
 

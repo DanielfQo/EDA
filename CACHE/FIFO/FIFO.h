@@ -15,6 +15,7 @@ public:
 
     void push(T value) {
         if (lista.getSize() == maxSize) {
+            cache.erase(lista->getHead()->dato);
             lista.pop();
         }
         cache[value] = lista.push(value);

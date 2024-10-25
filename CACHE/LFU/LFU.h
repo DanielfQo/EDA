@@ -25,7 +25,9 @@ public:
             cache[clave] = nodo;
         } else {
             Nodo<T>* nodo = cache[clave];
-            heap.aumentarFrecuencia(nodo); 
+            int frecuencia = nodo->frecuencia + 1;
+            heap.eliminarNodo(nodo);
+            cache[clave] = heap.insertarConFrecuencia(clave,frecuencia);
         }
     }
 

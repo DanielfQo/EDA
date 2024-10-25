@@ -15,4 +15,9 @@ int main(){
     cache.push(6);
 
     cache.imprimir();
+
+    cache.push(2);
+    cache.push(3);
+
+    cache.imprimir();
 }

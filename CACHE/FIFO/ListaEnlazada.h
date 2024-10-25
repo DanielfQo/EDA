@@ -32,7 +32,7 @@ public:
         return size;
     }
 
-    void push(T value) {
+    Node<T>* push(T value) {
         Node<T>* newNode = new Node<T>(value);
         if (tail != nullptr) {
             tail->next = newNode;
@@ -42,6 +42,7 @@ public:
             head = newNode;
         }
         size++;
+        return newNode;
     }
 
     void pop() {

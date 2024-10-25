@@ -110,29 +110,46 @@ public:
         return nodo;
     }
 
-    void aumentarFrecuencia(Nodo<T>* nodo) {
-        if (nodo == nullptr) throw std::runtime_error("Nodo no válido");
-        
-        nodo->frecuencia++;
-
-        if (nodo->frecuencia > minimo->frecuencia) {
-            if (nodo->padre != nullptr) {
-                if (nodo->padre->hijo == nodo) {
-                    nodo->padre->hijo = (nodo->derecha == nodo) ? nullptr : nodo->derecha; 
-                }
-                nodo->izquierda->derecha = nodo->derecha;
-                nodo->derecha->izquierda = nodo->izquierda;
-                nodo->padre = nullptr;
-            }
+    Nodo<T>* insertarConFrecuencia(T clave, int frecuencia){
+        Nodo<T>* nodo = new Nodo<T>(clave);
+        nodo->frecuencia = frecuencia;
+        if (minimo == nullptr) {
+            minimo = nodo;
+        } else {
             nodo->izquierda = minimo;
             nodo->derecha = minimo->derecha;
             minimo->derecha->izquierda = nodo;
             minimo->derecha = nodo;
+            if (clave < minimo->frecuencia) minimo = nodo;
+        }
+        n++;
+        return nodo;
+    }
 
-            if (nodo->frecuencia > minimo->frecuencia) {
-                minimo = nodo;
+    void eliminarNodo(Nodo<T>* nodo) {
+        if (nodo == nullptr) throw std::runtime_error("Nodo no válido");
+
+        nodo->izquierda->derecha = nodo->derecha;
+        nodo->derecha->izquierda = nodo->izquierda;
+
+        if (nodo->padre != nullptr) {
+            if (nodo->padre->hijo == nodo) {
+            nodo->padre->hijo = (nodo->derecha == nodo) ? nullptr : nodo->derecha;
+            }
+            nodo->padre->grado--;
+        }
+
+        if (nodo == minimo) {
+            if (nodo->derecha == nodo) {
+            minimo = nullptr;
+            } else {
+            minimo = nodo->derecha;
+            consolidar();
             }
         }
+
+        delete nodo;
+        n--;
     }
 
     T obtenerMin() {

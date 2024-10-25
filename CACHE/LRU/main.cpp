@@ -26,6 +26,4 @@ int main(){
     cache.insertar('d');
     cache.mostrarCache();
 
-
-
 }

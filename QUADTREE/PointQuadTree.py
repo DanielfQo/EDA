@@ -116,7 +116,7 @@ class PointQuadTree:
     def dibujar(self, screen):
         if self.punto is not None:
             self.punto.dibujar(screen)
-
+        
         pygame.draw.rect(screen, (255, 255, 255), 
                         (self.limite.x, self.limite.y, self.limite.ancho, self.limite.alto), ancho_linea)
         

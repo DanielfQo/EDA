@@ -13,7 +13,7 @@ pygame.display.set_caption("Visualización QuadTree")
 limite = Rectangulo(0, 0, ancho, alto)
 quadtree = PointQuadTree(limite)
 
-random.seed(42)
+random.seed(pygame.time.get_ticks())
 for _ in range(50):
     x = random.randint(0, ancho)
     y = random.randint(0, alto)

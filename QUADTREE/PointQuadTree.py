@@ -1,7 +1,7 @@
 import pygame
 import math
 
-radio = 3
+radio = 5
 ancho_linea = 1
 
 class Punto:
@@ -10,7 +10,7 @@ class Punto:
         self.y = y
 
     def dibujar(self, screen):
-        pygame.draw.circle(screen, (0, 0, 255), (self.x, self.y), radio)
+        pygame.draw.circle(screen, (255, 0, 0), (self.x, self.y), radio)
 
 class Rectangulo:
     def __init__(self, x, y, ancho, alto):
@@ -23,9 +23,46 @@ class Rectangulo:
 
         return (self.x <= punto.x <= self.x + self.ancho and
                 self.y <= punto.y <= self.y + self.alto)
+    
+    def contiene_circulo(self, circulo):
+        x = circulo.x
+        y = circulo.y
+        radio = circulo.radio
 
+        x1 = self.x
+        y1 = self.y
+        x2 = self.x + self.ancho
+        y2 = self.y + self.alto
+
+        x = max(x1, min(x, x2))
+        y = max(y1, min(y, y2))
+
+        distancia = math.sqrt((x - circulo.x) ** 2 + (y - circulo.y) ** 2)
+
+        return distancia < radio
+
+
+class Circulo:
+    def __init__(self, x, y, radio):
+        self.x = x
+        self.y = y
+        self.radio = radio
+
+    def contiene_punto(self, punto):
+        x = punto.x
+        y = punto.y
+
+        distancia = math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+
+        return distancia < self.radio
+
+    def dibujar(self, screen):
+        surface = pygame.Surface((self.radio * 2, self.radio * 2), pygame.SRCALPHA)
+        pygame.draw.circle(surface, (0, 255, 0, 128), (self.radio, self.radio), self.radio)
+        screen.blit(surface, (self.x - self.radio, self.y - self.radio))
 
 class PointQuadTree:
+
     def __init__(self, limite):
         self.noroeste = None
         self.noreste = None
@@ -77,12 +114,11 @@ class PointQuadTree:
         return False
 
     def dibujar(self, screen):
+        if self.punto is not None:
+            self.punto.dibujar(screen)
 
         pygame.draw.rect(screen, (255, 255, 255), 
                         (self.limite.x, self.limite.y, self.limite.ancho, self.limite.alto), ancho_linea)
-
-        if self.punto is not None:
-            self.punto.dibujar(screen)
         
         if self.noroeste is not None:
             self.noroeste.dibujar(screen)
@@ -95,17 +131,30 @@ class PointQuadTree:
 
         if self.sureste is not None:
             self.sureste.dibujar(screen)
+    
+    def buscar(self, punto):
+        if self.limite.contiene(punto):
+            if self.punto is not None:
+                if self.punto.x == punto.x and self.punto.y == punto.y:
+                    return True
+            else:
+                if self.noreste.buscar(punto): return True
+                elif self.noroeste.buscar(punto): return True
+                elif self.sureste.buscar(punto): return True
+                elif self.suroeste.buscar(punto): return True
+                else: return False
+        return False
+    
+    def buscar_por_rango(self, circulo):
+        puntos = []
+        if self.limite.contiene_circulo(circulo):
+            if self.punto is not None:
+                if circulo.contiene_punto(self.punto):
+                    puntos.append(self.punto)
+            if self.dividido:
+                puntos.extend(self.noreste.buscar_por_rango(circulo))
+                puntos.extend(self.noroeste.buscar_por_rango(circulo))
+                puntos.extend(self.sureste.buscar_por_rango(circulo))
+                puntos.extend(self.suroeste.buscar_por_rango(circulo))
 
-    def imprimir_arbol(self):
-        if self.dividido:
-            print("Noroeste: ", self.noroeste.limite.x, self.noroeste.limite.y, self.noroeste.limite.ancho , self.noroeste.limite.alto)
-            self.noroeste.imprimir_arbol()
-
-            print("Noreste: ", self.noreste.limite.x, self.noreste.limite.y, self.noreste.limite.ancho , self.noreste.limite.alto)
-            self.noreste.imprimir_arbol()
-
-            print("Suroeste: ", self.suroeste.limite.x, self.suroeste.limite.y, self.suroeste.limite.ancho , self.suroeste.limite.alto)
-            self.suroeste.imprimir_arbol()
-
-            print("Sureste: ", self.sureste.limite.x, self.sureste.limite.y, self.sureste.limite.ancho , self.sureste.limite.alto)
-            self.sureste.imprimir_arbol()
+        return puntos

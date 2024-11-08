@@ -114,24 +114,35 @@ class PointQuadTree:
         return False
 
     def dibujar(self, screen):
+
+        dibujar = False
+
         if self.punto is not None:
             self.punto.dibujar(screen)
-        
+
         pygame.draw.rect(screen, (255, 255, 255), 
                         (self.limite.x, self.limite.y, self.limite.ancho, self.limite.alto), ancho_linea)
         
-        if self.noroeste is not None:
+        if self.dividido:
+            if self.noroeste.punto is not None:
+                dibujar = True
+
+            elif self.noreste.punto is not None:
+                dibujar = True
+
+            elif self.suroeste.punto is not None:
+                dibujar = True
+
+            elif self.sureste.punto is not None:
+                dibujar = True
+
+        if dibujar:
             self.noroeste.dibujar(screen)
-
-        if self.noreste is not None:
             self.noreste.dibujar(screen)
-
-        if self.suroeste is not None:
             self.suroeste.dibujar(screen)
-
-        if self.sureste is not None:
             self.sureste.dibujar(screen)
-    
+
+
     def buscar(self, punto):
         if self.limite.contiene(punto):
             if self.punto is not None:

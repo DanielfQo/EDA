@@ -3,6 +3,36 @@ import sys
 from PointQuadTree import PointQuadTree, Rectangulo, Punto, Circulo
 import random
 
+def generar_dot(quadtree, nombre_archivo="quadtree.dot"):
+    with open(nombre_archivo, "w") as archivo:
+        archivo.write("digraph PointQuadTree {\n")
+        archivo.write("    node [shape=circle];\n")
+        
+        def agregar_nodos(quadtree, parent_id=None):
+            if quadtree is None or quadtree.limite is None:
+                return
+
+            nodo_id = f"{id(quadtree)}"
+            
+            etiqueta = f"({quadtree.limite.x},{quadtree.limite.y})\\n{quadtree.limite.ancho}x{quadtree.limite.alto}"
+            if quadtree.punto:
+                etiqueta += f"\\nPunto: ({quadtree.punto.x}, {quadtree.punto.y})"
+
+            archivo.write(f'    {nodo_id} [label="{etiqueta}"];\n')
+            
+            if parent_id:
+                archivo.write(f"    {parent_id} -> {nodo_id};\n")
+            
+            if quadtree.dividido:
+                agregar_nodos(quadtree.noroeste, nodo_id)
+                agregar_nodos(quadtree.noreste, nodo_id)
+                agregar_nodos(quadtree.suroeste, nodo_id)
+                agregar_nodos(quadtree.sureste, nodo_id)
+    
+        agregar_nodos(quadtree)
+        archivo.write("}\n")
+
+
 ancho = 1024
 alto = 720
 
@@ -52,3 +82,6 @@ while corriendo:
     pygame.display.flip()
 
 pygame.quit()
+
+generar_dot(quadtree)
+

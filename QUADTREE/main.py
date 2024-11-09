@@ -2,6 +2,7 @@ import pygame
 import sys
 from PointQuadTree import PointQuadTree, Rectangulo, Punto, Circulo
 import random
+import subprocess
 
 def generar_dot(quadtree, nombre_archivo="quadtree.dot"):
     with open(nombre_archivo, "w") as archivo:
@@ -31,6 +32,8 @@ def generar_dot(quadtree, nombre_archivo="quadtree.dot"):
     
         agregar_nodos(quadtree)
         archivo.write("}\n")
+
+    subprocess.run(["dot", "-Tpng", nombre_archivo, "-o", "quadtree.png"])
 
 
 ancho = 1024
@@ -83,5 +86,6 @@ while corriendo:
 
 pygame.quit()
 
+#Debe estar instalado graphviz
 generar_dot(quadtree)
 

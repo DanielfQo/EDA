@@ -38,6 +38,7 @@ def generar_dot(quadtree, nombre_archivo="quadtree.dot"):
 
 ancho = 1024
 alto = 720
+PUNTOSGENERADOS = 50
 
 pygame.init()
 screen = pygame.display.set_mode((ancho, alto))
@@ -47,7 +48,7 @@ limite = Rectangulo(0, 0, ancho, alto)
 quadtree = PointQuadTree(limite)
 
 random.seed(pygame.time.get_ticks())
-for _ in range(50):
+for _ in range(PUNTOSGENERADOS):
     x = random.randint(0, ancho)
     y = random.randint(0, alto)
     punto = Punto(x, y)

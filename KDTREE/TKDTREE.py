@@ -35,34 +35,29 @@ class KDTREE:
                 self._insertar_recursivo(nodo.der, valor, profundidad + 1)
 
     def dibujar(self, pantalla, nodo=None, rect=None, profundidad=0):
-        # Verificar si estamos en el nodo raíz
+
         ancho, alto = pantalla.get_size()
         if nodo is None:
             nodo = self.raiz
             rect = (0, 0, ancho, alto)
 
-        # Si el nodo es None, no continuar
         if nodo is None:
             return
 
-        # Coordenadas del nodo actual
         x, y = nodo.valor
         eje = profundidad % 2
 
-        # Dibujar línea divisoria y actualizar rectángulos para hijos
-        if eje == 0:  # Eje vertical
+        if eje == 0:
             pg.draw.line(pantalla, COLOR_DIVISION, (x, rect[1]), (x, rect[1] + rect[3]), 1)
             rect_izq = (rect[0], rect[1], x - rect[0], rect[3])
             rect_der = (x, rect[1], rect[2] - (x - rect[0]), rect[3])
-        else:  # Eje horizontal
+        else: 
             pg.draw.line(pantalla, COLOR_DIVISION, (rect[0], y), (rect[0] + rect[2], y), 1)
             rect_izq = (rect[0], rect[1], rect[2], y - rect[1])
             rect_der = (rect[0], y, rect[2], rect[3] - (y - rect[1]))
 
-        # Dibujar el nodo
         pg.draw.circle(pantalla, COLOR_NODO, (x, y), 5)
 
-        # Llamada recursiva para los hijos, solo si existen
         if nodo.izq is not None:
             self.dibujar(pantalla, nodo.izq, rect_izq, profundidad + 1)
         if nodo.der is not None:

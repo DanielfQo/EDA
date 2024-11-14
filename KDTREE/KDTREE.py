@@ -4,6 +4,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 import csv
+import math
 
 # Colores para la visualización
 COLOR_FONDO = (255, 255, 255)
@@ -42,8 +43,59 @@ class KDTREE:
             else:
                 self._insertar_recursivo(nodo.der, valor, profundidad + 1)
 
+    def buscar(self, valor):
+        if len(valor) != self.dimension:
+            raise ValueError(f"El valor debe tener {self.dimension} coordenadas.")
+        return self._buscar_recursivo(self.raiz, valor, 0)
+
+    def _buscar_recursivo(self, nodo, valor, profundidad):
+        if nodo is None:
+            return False
+        if nodo.valor == valor:
+            return True
+
+        eje = profundidad % self.dimension
+        if valor[eje] < nodo.valor[eje]:
+            return self._buscar_recursivo(nodo.izq, valor, profundidad + 1)
+        else:
+            return self._buscar_recursivo(nodo.der, valor, profundidad + 1)
+        
+    def calcular_distancia(self, p1, p2):
+        """Calcula la distancia euclidiana entre dos puntos."""
+        return math.sqrt(sum((p1[i] - p2[i]) ** 2 for i in range(len(p1))))
+
+    def k_vecinos_mas_proximos(self, punto, k):
+        """Devuelve los k vecinos más cercanos al punto dado."""
+        if len(punto) != self.dimension:
+            raise ValueError(f"El punto debe tener {self.dimension} coordenadas.")
+        vecinos = []
+        self._k_vecinos_recursivo(self.raiz, punto, k, 0, vecinos)
+        return sorted(vecinos, key=lambda x: x[0])[:k]
+
+    def _k_vecinos_recursivo(self, nodo, punto, k, profundidad, vecinos):
+        if nodo is None:
+            return
+
+        distancia = self.calcular_distancia(nodo.valor, punto)
+
+        if len(vecinos) < k:
+            vecinos.append((distancia, nodo.valor))
+        else:
+            vecinos.sort()
+            if distancia < vecinos[-1][0]:
+                vecinos[-1] = (distancia, nodo.valor)
+
+        eje = profundidad % self.dimension
+        if punto[eje] < nodo.valor[eje]:
+            self._k_vecinos_recursivo(nodo.izq, punto, k, profundidad + 1, vecinos)
+            if len(vecinos) < k or abs(punto[eje] - nodo.valor[eje]) < vecinos[-1][0]:
+                self._k_vecinos_recursivo(nodo.der, punto, k, profundidad + 1, vecinos)
+        else:
+            self._k_vecinos_recursivo(nodo.der, punto, k, profundidad + 1, vecinos)
+            if len(vecinos) < k or abs(punto[eje] - nodo.valor[eje]) < vecinos[-1][0]:
+                self._k_vecinos_recursivo(nodo.izq, punto, k, profundidad + 1, vecinos)
+
     def cargar_desde_csv(self, nombre_archivo):
-        """Carga puntos desde un archivo CSV e inserta en el KDTree."""
         with open(nombre_archivo, 'r') as archivo_csv:
             lector_csv = csv.reader(archivo_csv)
             for fila in lector_csv:
@@ -51,9 +103,8 @@ class KDTREE:
                 self.insertar(punto)
 
     def dibujar_3d(self):
-        """Dibuja el KDTree en 3D utilizando PyOpenGL."""
         if self.dimension != 3:
-            raise NotImplementedError("La visualización 3D solo está implementada para KDTrees de 3 dimensiones.")
+            raise NotImplementedError("La visualizacion 3D solo esta implementada para KDTrees de 3 dimensiones.")
         self._dibujar_recursivo_3d(self.raiz)
 
     def _dibujar_recursivo_3d(self, nodo):
@@ -77,12 +128,11 @@ class KDTREE:
         glEnd()
 
     def _dibujar_esfera(self):
-        glColor3f(1.0, 0.5, 0.0)  # Color naranja
+        glColor3f(1.0, 0.5, 0.0)  
         glutSolidSphere(1, 10, 10)
-        glColor3f(1.0, 1.0, 1.0)  # Resetear color a blanco
+        glColor3f(1.0, 1.0, 1.0)  
 
     def iniciar_opengl(self):
-        """Inicia el entorno de PyOpenGL."""
         pg.init()
         
         pg.display.set_mode((800, 600), DOUBLEBUF | OPENGL)
@@ -91,7 +141,6 @@ class KDTREE:
         glTranslatef(0.0, 0.0, -20)
 
     def dibujar_ejes(self):
-        """Dibuja los ejes en 3D para referencia."""
         glBegin(GL_LINES)
         glColor3f(1, 0, 0)
         glVertex3f(-1000, 0, 0)
@@ -106,7 +155,6 @@ class KDTREE:
         glColor3f(1, 1, 1)
 
     def visualizar_3d(self):
-        """Visualiza el KDTree en 3D."""
         self.iniciar_opengl()
 
         angulo_x, angulo_y = 0, 0
@@ -150,7 +198,6 @@ class KDTREE:
             pg.time.wait(10)
 
     def dibujar_2d(self, pantalla, nodo=None, rect=None, profundidad=0):
-        """Dibuja el KDTree en 2D utilizando Pygame."""
         if self.dimension != 2:
             raise NotImplementedError("La visualización 2D solo está implementada para KDTrees de 2 dimensiones.")
 
@@ -180,9 +227,8 @@ class KDTREE:
             self.dibujar_2d(pantalla, nodo.izq, rect_izq, profundidad + 1)
         if nodo.der is not None:
             self.dibujar_2d(pantalla, nodo.der, rect_der, profundidad + 1)
-            
+
     def visualizacion_2d(self):
-        """Inicia la visualización 2D en pygame y permite insertar nodos con clics de mouse."""
         pg.init()
         pantalla = pg.display.set_mode((800, 600))
         pg.display.set_caption("Visualización 2D del KDTree")

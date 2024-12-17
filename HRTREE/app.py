@@ -63,13 +63,14 @@ while running:
             if BUTTON_X <= mouse_x <= BUTTON_X + BUTTON_WIDTH and BUTTON_Y <= mouse_y <= BUTTON_Y + BUTTON_HEIGHT:
                 squares = generate_random_squares(square_count, WIDTH, HEIGHT)
                 if(squaresSobrepuestos != []):
+                    hrtree.create_new_version()
                     for square in squaresSobrepuestos:
                         x1, y1, x2, y2 = square.topleft[0], square.topleft[1], square.bottomright[0], square.bottomright[1]
                         mbr = ((x1, y1), (x2, y2))
                         hrtree.insert(mbr)
 
                     squaresSobrepuestos.clear()
-                    hrtree.create_new_version()
+                    
                     print("Estado después de la nueva versión:", hrtree.query(((0, 0), (WIDTH, HEIGHT))))
 
 

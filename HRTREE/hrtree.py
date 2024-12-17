@@ -48,13 +48,21 @@ class HRTree:
             if len(new_node.entries) < self._max_entries():
                 new_node.entries.append((mbr, None))
             else:
-                # Dividir el nodo
-                self._split_node(new_node, mbr)
+                # Dividir el nodo y manejar los nodos resultantes
+                left_node, right_node = self._split_node(new_node, mbr)
+                return self._create_new_parent(left_node, right_node)
         else:
             # Elegir el hijo adecuado para descender
             best_child = self._choose_subtree(new_node, mbr)
             updated_child = self._insert_recursive(best_child, mbr)
+            
+            # Actualizar la entrada del hijo en el padre
             self._update_entry(new_node, best_child, updated_child)
+            
+            # Verificar si el nodo también necesita dividirse
+            if len(new_node.entries) > self._max_entries():
+                left_node, right_node = self._split_node(new_node, None)
+                return self._create_new_parent(left_node, right_node)
 
         return new_node
 
@@ -78,21 +86,30 @@ class HRTree:
 
     # Métodos auxiliares
     def _max_entries(self):
-        return 4  # Máximo de entradas por nodo (por simplicidad)
+        return 2  # Máximo de entradas por nodo (por simplicidad)
 
     def _split_node(self, node, new_mbr):
         """Divide un nodo lleno y distribuye los MBRs."""
+        # Combinar las entradas existentes con el nuevo MBR
         all_entries = node.entries + [(new_mbr, None)]
-        all_entries.sort(key=lambda x: x[0][0][0])  # Ordenar por coordenadas x mínimas
+        
+        # Ordenar las entradas por coordenadas x mínimas para simplificar la división
+        all_entries.sort(key=lambda x: x[0][0][0])
+        
+        # Dividir las entradas en dos grupos
         mid = len(all_entries) // 2
-
+        left_entries = all_entries[:mid]
+        right_entries = all_entries[mid:]
+        
+        # Crear los nuevos nodos izquierdo y derecho
         left_node = HRTreeNode(is_leaf=node.is_leaf, timestamp=self.current_time)
+        left_node.entries = left_entries
+        
         right_node = HRTreeNode(is_leaf=node.is_leaf, timestamp=self.current_time)
-
-        left_node.entries = all_entries[:mid]
-        right_node.entries = all_entries[mid:]
-
+        right_node.entries = right_entries
+        
         if node == self.history[-1]:  # Si es la raíz
+            # Crear una nueva raíz
             new_root = HRTreeNode(is_leaf=False, timestamp=self.current_time)
             new_root.entries = [
                 (self._calculate_mbr(left_node.entries), left_node),
@@ -100,6 +117,7 @@ class HRTree:
             ]
             self.history[-1] = new_root
         else:
+            # Devuelve los nodos divididos para que el padre los gestione
             return left_node, right_node
 
     def _choose_subtree(self, node, mbr):
@@ -125,6 +143,15 @@ class HRTree:
             if child == old_child:
                 parent.entries[i] = (self._calculate_mbr(new_child.entries), new_child)
                 break
+
+    def _create_new_parent(self, left_node, right_node):
+        """Crea un nuevo nodo padre para los nodos divididos."""
+        new_parent = HRTreeNode(is_leaf=False, timestamp=self.current_time)
+        new_parent.entries = [
+            (self._calculate_mbr(left_node.entries), left_node),
+            (self._calculate_mbr(right_node.entries), right_node),
+        ]
+        return new_parent
 
     def _mbr_overlap(self, mbr1, mbr2):
         """Comprueba si dos MBRs se superponen."""
@@ -232,6 +259,10 @@ class HRTreeFullVisualizer:
                 self._add_nodes_edges(G, child, node_label)
     
 
+
+
+
+"""
 hr_tree = HRTree()
 
 
@@ -249,11 +280,21 @@ print("\nTiempo:", hr_tree.current_time)
 hr_tree.insert(((4, 4), (5, 5)))
 print("Estado en tiempo 2:", hr_tree.query(((0, 0), (5, 5))))
 
-print("\nConsulta en el tiempo 1:")
-print("Estado en tiempo 1:", hr_tree.query(((0, 0), (3, 3)), time_point=1))
+hr_tree.create_new_version()
+print("\nTiempo:", hr_tree.current_time)
+hr_tree.insert(((4, 0), (1, 1)))
+print("Estado en tiempo 3:", hr_tree.query(((0, 0), (5, 5))))
 
-print("\nConsulta en el tiempo actual:")
-print("Estado actual:", hr_tree.query(((0, 0), (5, 5)))) 
+hr_tree.create_new_version()
+print("\nTiempo:", hr_tree.current_time)
+hr_tree.insert(((6, 2), (3, 3)))
+print("Estado en tiempo 4:", hr_tree.query(((0, 0), (5, 5))))
+
+hr_tree.create_new_version()
+print("\nTiempo:", hr_tree.current_time)
+hr_tree.insert(((1, 4), (5, 5)))
+print("Estado en tiempo 5:", hr_tree.query(((0, 0), (5, 5))))
+
 
 # Visualizar cada R tree por version
 visualizer = HRTreeFullVisualizer(hr_tree)
@@ -265,4 +306,4 @@ visualizer.draw_tree(version=2)
 full_visualizer = HRTreeFullVisualizer(hr_tree)
 full_visualizer.draw_full_history()
 
-
+"""

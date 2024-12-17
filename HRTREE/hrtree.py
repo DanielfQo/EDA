@@ -261,14 +261,18 @@ tree.insert(((2,2),(3,3)))
 tree.insert(((4,4),(5,5)))
 tree.insert(((6,6),(7,7)))
 tree.insert(((8,8),(9,9)))  # Debería provocar división
+tree.create_new_version()
+tree.insert(((1,0),(1,1)))
+tree.insert(((3,2),(3,3)))
+tree.insert(((5,4),(5,5)))
+tree.insert(((7,6),(7,7)))
+tree.insert(((9,8),(9,9)))
 
 # Consultar en la versión actual (tiempo actual):
 print("Consulta:", tree.query(((0,0),(9,9))))  # Debería encontrar el MBR ((0,0),(1,1)) o cercanos
 # Visualizar cada R tree por version
 visualizer = HRTreeFullVisualizer(tree)
-visualizer.draw_tree(version=0)
-visualizer.draw_tree(version=1)
-visualizer.draw_tree(version=2)
+
 
 # Visualizar el historial completo del árbol
 full_visualizer = HRTreeFullVisualizer(tree)

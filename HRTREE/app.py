@@ -45,7 +45,7 @@ def generate_random_squares(count, width, height, rectangulos = rectangles):
 
     return squares
 
-square_count = 2
+square_count = 10
 squares = generate_random_squares(square_count, WIDTH, HEIGHT)
 
 

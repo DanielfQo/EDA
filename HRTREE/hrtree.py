@@ -86,7 +86,7 @@ class HRTree:
 
     # Métodos auxiliares
     def _max_entries(self):
-        return 2  # Máximo de entradas por nodo (por simplicidad)
+        return 8  # Máximo de entradas por nodo (por simplicidad)
 
     def _split_node(self, node, new_mbr):
         """Divide un nodo lleno y distribuye los MBRs."""

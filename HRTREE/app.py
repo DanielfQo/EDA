@@ -141,3 +141,6 @@ while running:
     pg.display.flip()
 
 pg.quit()
+
+full_visualizer = hrt.HRTreeFullVisualizer(hrtree)
+full_visualizer.draw_full_history()

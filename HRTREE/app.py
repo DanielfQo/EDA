@@ -143,4 +143,7 @@ while running:
 pg.quit()
 
 full_visualizer = hrt.HRTreeFullVisualizer(hrtree)
+full_visualizer.draw_tree(0)
+full_visualizer.draw_tree(1)
+full_visualizer.draw_tree(2)
 full_visualizer.draw_full_history()

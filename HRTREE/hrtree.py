@@ -5,39 +5,36 @@ import copy
 
 class HRTreeNode:
     def __init__(self, is_leaf=False, timestamp=None):
-        self.is_leaf = is_leaf  # Indica si el nodo es hoja
-        self.entries = []       # Contiene pares (MBR, puntero o ID)
-        self.timestamp = timestamp  # Marca de tiempo del nodo
+        self.is_leaf = is_leaf  
+        self.entries = []       
+        self.timestamp = timestamp  
 
 class HRTree:
     def __init__(self):
-        self.history = []   # Array que apunta a las raíces de las versiones del árbol
-        self.current_time = -1  # Tiempo actual del árbol (empezamos en -1, así la primera versión es 0)
+        self.history = []  
+        self.current_time = -1  
     
     def create_new_version(self):
         self.current_time += 1
         if self.history:
-            # Crear una copia profunda de la última versión
+            
             new_root = copy.deepcopy(self.history[-1])
             new_root.timestamp = self.current_time
             self.history.append(new_root)
         else:
-            # Primera versión: crear raíz
             root = HRTreeNode(is_leaf=True, timestamp=self.current_time)
             self.history.append(root)
 
     def insert(self, mbr):
         """Inserta un nuevo MBR en el árbol en la versión actual."""
         if not self.history:
-            # Si el árbol está vacío, crear la primera versión y raíz
+           
             self.create_new_version()
 
         root = self.history[-1]
         updated_root, new_sibling = self._insert_recursive(root, mbr)
 
-        # Si hubo división en la raíz
         if new_sibling is not None:
-            # Crear un nuevo nodo raíz que apunte a los dos nodos resultantes
             new_root = HRTreeNode(is_leaf=False, timestamp=self.current_time)
             new_root.entries = [
                 (self._calculate_mbr(updated_root.entries), updated_root),
@@ -50,7 +47,6 @@ class HRTree:
     def _insert_recursive(self, node, mbr):
         """Inserta un MBR de forma recursiva en el nodo dado.
            Devuelve: (nodo_actualizado, nuevo_hermano_o_None)"""
-        # Crear copia si el timestamp no coincide con la versión actual
         if node.timestamp < self.current_time:
             new_node = HRTreeNode(is_leaf=node.is_leaf, timestamp=self.current_time)
             new_node.entries = list(node.entries)
@@ -58,26 +54,19 @@ class HRTree:
             new_node = node
 
         if new_node.is_leaf:
-            # Insertar el MBR directamente en la hoja
             if len(new_node.entries) < self._max_entries():
                 new_node.entries.append((mbr, None))
                 return new_node, None
             else:
-                # Dividir el nodo hoja
                 return self._split_node(new_node, (mbr, None))
         else:
-            # Elegir el hijo adecuado
             best_child = self._choose_subtree(new_node, mbr)
             updated_child, new_sibling = self._insert_recursive(best_child, mbr)
             
-            # Actualizar la entrada correspondiente al hijo modificado
             self._update_entry(new_node, best_child, updated_child)
 
-            # Si hubo división en el hijo
             if new_sibling is not None:
-                # Añadir el nuevo hermano al nodo actual
                 new_node.entries.append((self._calculate_mbr(new_sibling.entries), new_sibling))
-                # Comprobar si es necesario dividir el nodo actual
                 if len(new_node.entries) > self._max_entries():
                     return self._split_node(new_node)
             
@@ -87,7 +76,6 @@ class HRTree:
         """Consulta los MBRs que se superponen con query_mbr en una versión específica."""
         if time_point is None:
             time_point = self.current_time
-        # Asegurarse de que time_point exista
         if time_point < 0 or time_point >= len(self.history):
             return []
         
@@ -105,9 +93,8 @@ class HRTree:
                 else:
                     self._query_recursive(pointer, query_mbr, results)
 
-    # Métodos auxiliares
     def _max_entries(self):
-        return 4  # Máximo de entradas por nodo (por simplicidad)
+        return 4  
 
     def _split_node(self, node, new_entry=None):
         """Divide un nodo lleno. Retorna (nuevo_nodo_izq, nuevo_nodo_der). 
@@ -117,7 +104,7 @@ class HRTree:
         else:
             all_entries = node.entries
 
-        # Ordenar por x mínimo (simple heurística)
+
         all_entries.sort(key=lambda x: x[0][0][0])
         mid = len(all_entries) // 2
 
@@ -219,7 +206,6 @@ class HRTreeFullVisualizer:
             G.add_edge(root_global_label, root_label, label=f"T{version}")
             self._add_nodes_edges(G, root, root_label)
 
-        # Dibujar el grafo
         plt.figure(figsize=(12, 8))
         try:
             pos = nx.drawing.nx_pydot.graphviz_layout(G, prog="dot")
